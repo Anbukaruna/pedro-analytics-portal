@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Pedro Analytics &mdash; Spring / Summer 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+
+    /* ─── Design Tokens ───────────────────────────────────────────── */
+    :root {
+      --black:        #0A0A0A;
+      --white:        #FFFFFF;
+      --cream:        #F2F0EC;
+      --cream-dark:   #E8E4DE;
+      --tan:          #B09E85;
+      --tan-light:    #D4C9B8;
+      --muted:        #8C857D;
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-body:    'Inter', -apple-system, sans-serif;
+      --ease:         cubic-bezier(0.16, 1, 0.3, 1);
+      --nav-h:        64px;
+    }
+
+    /* ─── Reset ───────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--cream);
+      font-family: var(--font-body);
+      font-weight: 300;
+      color: var(--black);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { text-decoration: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+
+    /* ─── Nav ─────────────────────────────────────────────────────── */
+    .nav {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 600;
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      padding: 0 60px;
+      transition: background 350ms ease, border-color 350ms ease, backdrop-filter 350ms ease;
+      border-bottom: 1px solid transparent;
+    }
+    .nav.scrolled {
+      background: rgba(10,10,10,0.96);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-color: rgba(255,255,255,0.07);
+    }
+
+    /* Logo — hidden until scrolled */
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+    .nav-logo img {
+      height: 18px;
+      width: auto;
+      filter: invert(1);
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 350ms ease, transform 350ms ease;
+    }
+    .nav-logo-text {
+      font-size: 13px;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--white);
+      font-weight: 400;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 350ms ease, transform 350ms ease;
+      display: none; /* shown via JS if img fails */
+    }
+    .nav.scrolled .nav-logo img,
+    .nav.scrolled .nav-logo-text {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .nav-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 36px;
+    }
+    .nav-link {
+      font-size: 10px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      transition: color 150ms ease;
+    }
+    .nav-link:hover { color: var(--tan); }
+    .nav-portal {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      transition: color 150ms ease;
+    }
+    .nav-portal:hover { color: rgba(255,255,255,0.65); }
+
+    /* ─── Hero ────────────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      height: 100svh;
+      min-height: 600px;
+      overflow: hidden;
+      background: var(--black);
+    }
+
+    .hero-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 22%;
+      filter: brightness(0.48) saturate(0.8);
+      transform: scale(1.07);
+      animation: heroZoom 9s var(--ease) forwards;
+    }
+    @keyframes heroZoom {
+      to { transform: scale(1); }
+    }
+
+    .hero-gradient {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.2) 45%, transparent 100%),
+        linear-gradient(to right, rgba(0,0,0,0.22) 0%, transparent 50%);
+    }
+
+    .hero-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 80px 96px;
+      animation: heroFadeUp 1.4s var(--ease) 0.4s both;
+    }
+    @keyframes heroFadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: var(--tan);
+      margin-bottom: 22px;
+    }
+
+    .hero-logo {
+      height: 56px;
+      width: auto;
+      filter: invert(1) drop-shadow(0 2px 10px rgba(0,0,0,0.5));
+      margin-bottom: 22px;
+    }
+    .hero-logo-fallback {
+      font-family: var(--font-display);
+      font-weight: 300;
+      font-size: clamp(52px, 7vw, 88px);
+      letter-spacing: 0.18em;
+      color: var(--white);
+      line-height: 1;
+      margin-bottom: 22px;
+      display: none;
+    }
+
+    .hero-tagline {
+      font-size: 11px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.42);
+      margin-bottom: 52px;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--white);
+      color: var(--black);
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      padding: 15px 30px;
+      transition: background 180ms ease, color 180ms ease, gap 180ms ease;
+    }
+    .btn-primary:hover {
+      background: var(--tan);
+      color: var(--white);
+      gap: 20px;
+    }
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: transparent;
+      color: rgba(255,255,255,0.5);
+      font-size: 10px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.18);
+      transition: color 180ms ease, border-color 180ms ease, gap 180ms ease;
+    }
+    .btn-ghost:hover {
+      color: var(--tan);
+      border-color: var(--tan);
+      gap: 16px;
+    }
+
+    /* Scroll hint */
+    .hero-scroll {
+      position: absolute;
+      bottom: 40px;
+      right: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      animation: heroFadeUp 1.4s var(--ease) 1.2s both;
+    }
+    .hero-scroll-label {
+      writing-mode: vertical-rl;
+      font-size: 9px;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+    }
+    .hero-scroll-bar {
+      width: 1px;
+      height: 56px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.5), transparent);
+      animation: scrollPulse 2.2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.25; transform: scaleY(0.5) translateY(-12px); }
+      50%       { opacity: 1;    transform: scaleY(1)   translateY(0); }
+    }
+
+    /* ─── Stats Strip ─────────────────────────────────────────────── */
+    .stats {
+      background: var(--black);
+      border-bottom: 1px solid #191919;
+      display: flex;
+      align-items: stretch;
+      padding: 0 80px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .stats::-webkit-scrollbar { display: none; }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 30px 52px 30px 0;
+      border-right: 1px solid #1e1e1e;
+      flex-shrink: 0;
+      min-width: 140px;
+    }
+    .stat:last-child {
+      border-right: none;
+      margin-left: auto;
+      padding-right: 0;
+      padding-left: 52px;
+      align-items: flex-end;
+    }
+    .stat-val {
+      font-family: var(--font-display);
+      font-weight: 300;
+      font-size: 36px;
+      color: var(--white);
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+    .stat-lbl {
+      font-size: 9px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .stat-lbl-lg {
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+      font-weight: 300;
+    }
+
+    /* ─── Section Shell ───────────────────────────────────────────── */
+    .section { padding: 96px 80px 112px; }
+
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 64px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--tan-light);
+    }
+    .section-eyebrow {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      color: var(--tan);
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(30px, 4vw, 50px);
+      line-height: 1;
+      color: var(--black);
+    }
+    .section-count {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 300;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* ─── Featured Report Card ────────────────────────────────────── */
+    .featured {
+      display: grid;
+      grid-template-columns: 58% 42%;
+      background: var(--white);
+      overflow: hidden;
+      margin-bottom: 4px;
+      text-decoration: none;
+      color: inherit;
+      transition: box-shadow 500ms var(--ease);
+      position: relative;
+    }
+    .featured:hover {
+      box-shadow: 0 36px 96px rgba(0,0,0,0.16);
+    }
+
+    .featured-media {
+      position: relative;
+      height: 540px;
+      overflow: hidden;
+    }
+    .featured-media img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center 15%;
+      transition: transform 650ms var(--ease);
+      filter: brightness(0.9) saturate(0.85);
+    }
+    .featured:hover .featured-media img {
+      transform: scale(1.05);
+      filter: brightness(1) saturate(1);
+    }
+
+    .featured-tag {
+      position: absolute;
+      top: 24px; left: 24px;
+      font-size: 9px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--white);
+      background: rgba(0,0,0,0.48);
+      padding: 5px 12px;
+      backdrop-filter: blur(6px);
+      z-index: 1;
+    }
+    .featured-pill {
+      position: absolute;
+      top: 24px; right: 24px;
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 300;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--tan);
+      background: rgba(0,0,0,0.48);
+      padding: 5px 14px;
+      backdrop-filter: blur(6px);
+      z-index: 1;
+    }
+
+    .featured-body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 72px 80px;
+    }
+    .featured-num {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 300;
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      color: var(--tan);
+      margin-bottom: 14px;
+    }
+    .featured-title {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(26px, 3vw, 38px);
+      line-height: 1.12;
+      color: var(--black);
+      margin-bottom: 8px;
+    }
+    .featured-sub {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+    .featured-rule {
+      width: 40px;
+      height: 1px;
+      background: var(--tan);
+      margin-bottom: 28px;
+    }
+    .featured-desc {
+      font-size: 13px;
+      line-height: 1.9;
+      color: #6a6560;
+      margin-bottom: 48px;
+      max-width: 320px;
+    }
+    .featured-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--black);
+      color: var(--white);
+      font-size: 10px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      padding: 14px 26px;
+      width: fit-content;
+      transition: background 160ms ease, gap 160ms ease;
+    }
+    .featured:hover .featured-cta {
+      background: var(--tan);
+      gap: 20px;
+    }
+
+    /* ─── 3-Column Report Grid ────────────────────────────────────── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      background: var(--tan-light);
+    }
+
+    .card {
+      background: var(--white);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      transition: box-shadow 480ms var(--ease), z-index 0ms 480ms;
+    }
+    .card:hover {
+      box-shadow: 0 28px 72px rgba(0,0,0,0.14);
+      z-index: 2;
+      transition: box-shadow 480ms var(--ease), z-index 0ms 0ms;
+    }
+
+    .card-media {
+      height: 290px;
+      overflow: hidden;
+      position: relative;
+    }
+    .card-media img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      transition: transform 580ms var(--ease);
+      filter: brightness(0.9) saturate(0.85);
+    }
+    .card:hover .card-media img {
+      transform: scale(1.06);
+      filter: brightness(1) saturate(1);
+    }
+    .card-media::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 70px;
+      background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.92));
+      pointer-events: none;
+    }
+    .card-tag {
+      position: absolute;
+      top: 16px; left: 16px;
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--white);
+      background: rgba(0,0,0,0.5);
+      padding: 4px 10px;
+      backdrop-filter: blur(5px);
+      z-index: 1;
+    }
+
+    .card-body {
+      padding: 26px 28px 34px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .card-num {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 300;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--tan);
+      margin-bottom: 7px;
+    }
+    .card-title {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 21px;
+      line-height: 1.2;
+      color: var(--black);
+      margin-bottom: 4px;
+    }
+    .card-sub {
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .card-rule {
+      width: 26px;
+      height: 1px;
+      background: var(--tan);
+      margin: 14px 0;
+    }
+    .card-desc {
+      font-size: 11.5px;
+      line-height: 1.78;
+      color: var(--muted);
+      margin-bottom: 22px;
+      flex: 1;
+    }
+    .card-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--black);
+      color: var(--white);
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 10px 18px;
+      width: fit-content;
+      transition: background 150ms ease, gap 150ms ease;
+    }
+    .card:hover .card-cta {
+      background: var(--tan);
+      gap: 14px;
+    }
+
+    /* ─── Scroll Reveal ───────────────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 680ms var(--ease), transform 680ms var(--ease);
+    }
+    .reveal.in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .d1 { transition-delay: 60ms; }
+    .d2 { transition-delay: 130ms; }
+    .d3 { transition-delay: 200ms; }
+    .d4 { transition-delay: 270ms; }
+    .d5 { transition-delay: 340ms; }
+    .d6 { transition-delay: 410ms; }
+
+    /* ─── Footer ──────────────────────────────────────────────────── */
+    .footer {
+      background: var(--black);
+      border-top: 1px solid #191919;
+      padding: 36px 80px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .footer-logo {
+      height: 16px;
+      width: auto;
+      filter: invert(1);
+      opacity: 0.35;
+    }
+    .footer-logo-text {
+      font-size: 11px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.22);
+      font-weight: 300;
+      display: none;
+    }
+    .footer-div { width: 1px; height: 14px; background: rgba(255,255,255,0.1); }
+    .footer-label {
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+    }
+    .footer-copy {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.13);
+    }
+
+    /* ─── Responsive ──────────────────────────────────────────────── */
+    @media (max-width: 1200px) {
+      .featured { grid-template-columns: 1fr 1fr; }
+      .featured-body { padding: 56px 56px; }
+    }
+    @media (max-width: 1000px) {
+      .section { padding: 72px 48px 88px; }
+      .stats { padding: 0 48px; }
+      .nav { padding: 0 32px; }
+      .hero-content { padding: 0 48px 80px; }
+      .hero-scroll { right: 48px; }
+      .footer { padding: 28px 48px; }
+      .featured { grid-template-columns: 1fr; }
+      .featured-media { height: 420px; }
+      .featured-body { padding: 48px 48px; }
+    }
+    @media (max-width: 820px) {
+      .grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .nav { padding: 0 20px; }
+      .nav-right { gap: 20px; }
+      .nav-link { display: none; }
+      .hero-content { padding: 0 24px 64px; }
+      .hero-scroll { display: none; }
+      .hero-logo { height: 40px; }
+      .section { padding: 56px 20px 72px; }
+      .stats { padding: 0 20px; }
+      .section-head { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .grid { grid-template-columns: 1fr; }
+      .featured-media { height: 300px; }
+      .featured-body { padding: 36px 24px; }
+      .featured-desc { max-width: 100%; }
+      .footer { flex-direction: column; text-align: center; padding: 28px 20px; }
+      .hero-actions { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 400px) {
+      .card-title { font-size: 18px; }
+      .btn-primary, .btn-ghost { font-size: 9px; }
+    }
+    @supports (padding: max(0px)) {
+      .nav {
+        padding-left:  max(60px, env(safe-area-inset-left));
+        padding-right: max(60px, env(safe-area-inset-right));
+      }
+      .footer {
+        padding-bottom: max(36px, env(safe-area-inset-bottom));
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- ─── Navigation ───────────────────────────────────────────────── -->
+  <nav class="nav" id="nav">
+    <div class="nav-logo">
+      <img
+        src="https://www.charleskeithgroup.com/wp-content/uploads/2022/09/PEDRO_Primary-Black-Logo-2-300x79.png"
+        alt="Pedro"
+        onerror="this.style.display='none'; document.querySelector('.nav-logo-text').style.display='block';"
+      />
+      <span class="nav-logo-text">Pedro</span>
+    </div>
+    <div class="nav-right">
+      <a href="#reports" class="nav-link">Reports</a>
+      <a href="pedro.html" class="nav-portal">&#8592; Analytics Portal</a>
+    </div>
+  </nav>
+
+  <!-- ─── Hero ─────────────────────────────────────────────────────── -->
+  <section class="hero" aria-label="Pedro Hero">
+    <img
+      class="hero-img"
+      src="https://www.pedroshoes.com/on/demandware.static/-/Library-Sites-Pedro/default/dwd845c2ee/images/homepage/2026/23mar26/g_keycapsule_pw_modelimage_1.jpg"
+      alt="Pedro Spring Summer 2026"
+      fetchpriority="high"
+    />
+    <div class="hero-gradient"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Analytics Portal</p>
+      <img
+        class="hero-logo"
+        src="https://www.charleskeithgroup.com/wp-content/uploads/2022/09/PEDRO_Primary-Black-Logo-2-300x79.png"
+        alt="Pedro"
+        onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+      />
+      <p class="hero-logo-fallback">Pedro</p>
+      <p class="hero-tagline">7 Power BI Reports &mdash; Spring / Summer 2026</p>
+      <div class="hero-actions">
+        <a href="#reports" class="btn-primary">Explore Reports &#8594;</a>
+        <a href="pedro.html" class="btn-ghost">View All &#8594;</a>
+      </div>
+    </div>
+    <div class="hero-scroll" aria-hidden="true">
+      <span class="hero-scroll-label">Scroll</span>
+      <div class="hero-scroll-bar"></div>
+    </div>
+  </section>
+
+  <!-- ─── Stats Strip ───────────────────────────────────────────────── -->
+  <div class="stats" aria-label="Key metrics">
+    <div class="stat">
+      <span class="stat-val">07</span>
+      <span class="stat-lbl">Reports</span>
+    </div>
+    <div class="stat" style="padding-left:52px;">
+      <span class="stat-val">SS26</span>
+      <span class="stat-lbl">Season</span>
+    </div>
+    <div class="stat" style="padding-left:52px;">
+      <span class="stat-val">PBI</span>
+      <span class="stat-lbl">Power BI</span>
+    </div>
+    <div class="stat">
+      <span class="stat-lbl-lg">Pedro Analytics</span>
+      <span class="stat-lbl" style="margin-top:6px;">Internal Use Only</span>
+    </div>
+  </div>
+
+  <!-- ─── Reports ──────────────────────────────────────────────────── -->
+  <main>
+    <section class="section" id="reports" style="background: var(--cream);">
+
+      <!-- Section Header -->
+      <div class="section-head reveal">
+        <div>
+          <span class="section-eyebrow">Pedro</span>
+          <h1 class="section-title">Analytics Reports</h1>
+        </div>
+        <span class="section-count">07 Reports</span>
+      </div>
+
+      <!-- ── Featured: Report 01 ─────────────────────────────────── -->
+      <a href="report-pdg-1.html" class="featured reveal" aria-label="View PDG Charles Squad Report">
+        <div class="featured-media">
+          <span class="featured-tag">PDG Charles Squad</span>
+          <span class="featured-pill">Featured</span>
+          <img
+            src="https://www.pedroshoes.com/on/demandware.static/-/Library-Sites-Pedro/default/dw1a055f66/images/megamenu/2026/23mar26/pw-new-in.jpg"
+            alt="PDG Charles Squad Report"
+            loading="lazy"
+          />
+        </div>
+        <div class="featured-body">
+          <span class="featured-num">Report 01</span>
+          <h2 class="featured-title">PDG Charles Squad Report</h2>
+          <p class="featured-sub">PD Store Profit &mdash; Power BI</p>
+          <div class="featured-rule"></div>
+          <p class="featured-desc">Store profit analytics for the PDG Charles Squad — tracking profitability, cost metrics, and performance KPIs across all store locations.</p>
+          <span class="featured-cta">View Report &#8594;</span>
+        </div>
+      </a>
+
+      <!-- ── Grid: Reports 02–07 ───────────────────────────────────── -->
+      <div class="grid" style="margin-top: 0;">
+
+        <!-- Report 02 -->
+        <a href="report-pdg-2.html" class="card reveal d1">
+          <div class="card-media">
+            <span class="card-tag">PD Transformation</span>
+            <img
+              src="https://www.pedroshoes.com/on/demandware.static/-/Library-Sites-Pedro/default/dwd4ae4388/images/megamenu/2026/13feb26/pw-ari.jpg"
+              alt="PD Transformation Report"
+              loading="lazy"
+            />
+          </div>
+          <div class="card-body">
+            <span class="card-num">Report 02</span>
+            <h3 class="card-title">PD Transformation Report</h3>
+            <p class="card-sub">Inventory Performance &mdash; Power BI</p>
+            <div class="card-rule"></div>
+            <p class="card-desc">Inventory performance and transformation tracking — monitoring stock efficiency, intake, and markdown analysis across categories.</p>
+            <span class="card-cta">View Report &#8594;</span>
+          </div>
+        </a>
+
+        <!-- Report 03 -->
+        <a href="report-pdg-3.html" class="card reveal d2">
+          <div class="card-media">
+            <span class="card-tag">PDG CRM</span>
+            <img
+              src="https://www.pedroshoes.com/on/demandware.static/-/Library-Sites-Pedro/default/dw077aae91/images/megamenu/2026/13feb26/pw-demi.jpg"
+              alt="PDG CRM Dashboard"
+              loading="lazy"
+            />
+          </div>
+          <div class="card-body">
+            <span class="card-num">Report 03</span>
+            <h3 class="card-title">PDG CRM Dashboard</h3>
+            <p class="card-sub">Customer Purchase (ABCD) &mdash; Power BI</p>
+            <div class="card-rule"></div>
+            <p class="card-desc">Customer purchase segmentation (ABCD) — analysing buying behaviour, loyalty tiers, and CRM performance across customer groups.</p>
+            <span class="card-cta">View Report &#8594;</span>
+          </div>
+        </a>
+
+        <!-- Report 04 -->
+        <a href="report-pdg-4.html" class="card reveal d3">
+          <div class="card-media">
+            <span class="card-tag">PD Huddle</span>
+            <img
+              src="https://www.pedroshoes.com/on/demandware.static/-/Library-Sites-Pedro/default/dw6c647d7f/images/megamenu/2026/2feb26/pw-novo.jpg"
+              alt="PD Huddle Report"
+              loading="lazy"
+            />
+          </div>
+          <div class="card-body">
+            <span class="card-num">Report 04</span>
+            <h3 class="card-title">PD Huddle Report</h3>
+            <p class="card-sub">PDI Huddle &mdash; Power BI</p>
+            <div class="card-rule"></div>
+            <p class="card-desc">Pedro huddle performance dashboard — consolidated team metrics and operational insights to support store-level decision-making.</p>
+            <span class="card-cta">View Report &#8594;</span>
+          </div>
+        </a>
+
+        <!-- Report 05 -->
+        <a href="report-pdg-5.html" class="card reveal d1">
+          <div class="card-media">
+            <span class="card-tag">PDG Merch Planner</span>
+            <img
+              src="https://www.pedroshoes.com/on/demandware.static/-/Library-Sites-Pedro/default/dw06400ff3/images/megamenu/2026/13feb26/pw-roam.jpg"
+              alt="PDG Merchandise Planner"
+              loading="lazy"
+            />
+          </div>
+          <div class="card-body">
+            <span class="card-num">Report 05</span>
+            <h3 class="card-title">PDG Merchandise Planner</h3>
+            <p class="card-sub">Merchandise Planning &mdash; Power BI</p>
+            <div class="card-rule"></div>
+            <p class="card-desc">Merchandise planning — tracking assortment performance, buy plans, and sell-through forecasts across categories and channels.</p>
+            <span class="card-cta">View Report &#8594;</span>
+          </div>
+        </a>
+
+        <!-- Report 06 -->
+        <a href="report-pdg-6.html" class="card reveal d2">
+          <div class="card-media">
+            <span class="card-tag">PDG General Stats</span>
+            <img
+              src="https://www.pedroshoes.com/on/demandware.static/-/Library-Sites-Pedro/default/dwb63d7c09/images/megamenu/2026/13feb26/pw-jatte.jpg"
+              alt="PDG General Stats"
+              loading="lazy"
+            />
+          </div>
+          <div class="card-body">
+            <span class="card-num">Report 06</span>
+            <h3 class="card-title">PDG General Stats</h3>
+            <p class="card-sub">General Statistics &mdash; Power BI</p>
+            <div class="card-rule"></div>
+            <p class="card-desc">General performance statistics — consolidated overview of key business metrics, sales trends, and operational KPIs across all markets.</p>
+            <span class="card-cta">View Report &#8594;</span>
+          </div>
+        </a>
+
+        <!-- Report 07 -->
+        <a href="report-pdg-7.html" class="card reveal d3">
+          <div class="card-media">
+            <span class="card-tag">PDS Operations</span>
+            <img
+              src="https://www.pedroshoes.com/on/demandware.static/-/Library-Sites-Pedro/default/dw780a68d6/images/homepage/2026/23mar26/g_keycapsule_pw_productimage_1.jpg"
+              alt="PDS Operations Dashboard"
+              loading="lazy"
+            />
+          </div>
+          <div class="card-body">
+            <span class="card-num">Report 07</span>
+            <h3 class="card-title">PDS Operations</h3>
+            <p class="card-sub">Operations Dashboard &mdash; Power BI</p>
+            <div class="card-rule"></div>
+            <p class="card-desc">Pedro store operations — monitoring store efficiency, staff productivity, and operational metrics for day-to-day management decisions.</p>
+            <span class="card-cta">View Report &#8594;</span>
+          </div>
+        </a>
+
+      </div><!-- /grid -->
+    </section>
+  </main>
+
+  <!-- ─── Footer ───────────────────────────────────────────────────── -->
+  <footer class="footer">
+    <div class="footer-brand">
+      <img
+        class="footer-logo"
+        src="https://www.charleskeithgroup.com/wp-content/uploads/2022/09/PEDRO_Primary-Black-Logo-2-300x79.png"
+        alt="Pedro"
+        onerror="this.style.display='none'; document.querySelector('.footer-logo-text').style.display='block';"
+      />
+      <span class="footer-logo-text">Pedro</span>
+      <div class="footer-div"></div>
+      <span class="footer-label">Charles &amp; Keith Group</span>
+    </div>
+    <p class="footer-copy">&copy; 2025 Analytics Portal &mdash; Internal Use Only</p>
+  </footer>
+
+  <!-- ─── Scripts ──────────────────────────────────────────────────── -->
+  <script>
+    // Nav: transparent on hero → dark glass on scroll
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 80);
+    }, { passive: true });
+
+    // Scroll reveal via IntersectionObserver
+    const revealEls = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(el => io.observe(el));
+  </script>
+
+</body>
+</html>
